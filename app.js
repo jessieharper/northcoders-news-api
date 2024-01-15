@@ -1,5 +1,5 @@
 const express = require("express");
-const { getTopics } = require("./controllers/app.controllers");
+const { getTopics, getApi } = require("./controllers/app.controllers");
 const {
   handleCustomErrors,
   handlePsqlErrors,
@@ -8,9 +8,10 @@ const {
 const app = express();
 
 app.get("/api/topics", getTopics);
+app.get("/api", getApi);
 
-app.use(handleCustomErrors);
-app.use(handlePsqlErrors);
+// app.use(handleCustomErrors);
+// app.use(handlePsqlErrors);
 app.use(handleServerErrors);
 
 module.exports = app;
