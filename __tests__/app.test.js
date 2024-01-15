@@ -68,3 +68,43 @@ describe("GET: /api/articles/:article_id", () => {
       });
   });
 });
+
+describe("GET: /api/articles", () => {
+  it("GET: 200 should respond with an array of article objects", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((result) => {
+        expect(result.body.articles.length).toBe(13);
+        result.body.articles.forEach((article) => {
+          expect(article).toHaveProperty("title", expect.any(String));
+          expect(article).toHaveProperty("topic", expect.any(String));
+          expect(article).toHaveProperty("author", expect.any(String));
+          expect(article).toHaveProperty("created_at", expect.any(String));
+          expect(article).toHaveProperty("votes", expect.any(Number));
+          expect(article).toHaveProperty("article_img_url", expect.any(String));
+          expect(article).toHaveProperty("comment_count", expect.any(String));
+        });
+      });
+  });
+  it("GET: 200 should respond with an object that is sorted by date in descending order", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("created_at", {
+          descending: true,
+        });
+      });
+  });
+  it("GET: 200 should respond with an array of article objects that do not contain body properties", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((result) => {
+        result.body.articles.forEach((article) => {
+          expect(article).not.toHaveProperty("body");
+        });
+      });
+  });
+});
