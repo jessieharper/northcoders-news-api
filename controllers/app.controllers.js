@@ -4,6 +4,7 @@ const {
   fetchArticles,
   fetchCommentsById,
   insertComments,
+  updateVotes,
 } = require("../models/app.models");
 
 const endpoints = require("../endpoints.json");
@@ -41,7 +42,7 @@ exports.getArticles = (req, res, next) => {
 };
 
 exports.getCommentsById = (req, res, next) => {
-  const article_id = req.params.article_id;
+  const { article_id } = req.params;
 
   const articleExistenceQuery = fetchArticleById(article_id);
   const fetchQuery = fetchCommentsById(article_id);
@@ -57,7 +58,7 @@ exports.getCommentsById = (req, res, next) => {
 };
 
 exports.postComments = (req, res, next) => {
-  const article_id = req.params.article_id;
+  const { article_id } = req.params;
   const newComment = req.body;
   const articleExistenceQuery = fetchArticleById(article_id);
   const insertQuery = insertComments(newComment, article_id);
@@ -66,6 +67,22 @@ exports.postComments = (req, res, next) => {
     .then((response) => {
       const comment = response[1];
       res.status(201).send({ comment });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.patchVotes = (req, res, next) => {
+  const { article_id } = req.params;
+  const newVotes = req.body;
+
+  const articleExistenceQuery = fetchArticleById(article_id);
+  const updateQuery = updateVotes(newVotes, article_id);
+  Promise.all([articleExistenceQuery, updateQuery])
+    .then((response) => {
+      const comment = response[1];
+      res.status(200).send({ comment });
     })
     .catch((err) => {
       next(err);

@@ -7,6 +7,8 @@ exports.handleCustomErrors = (err, req, res, next) => {
 exports.handlePsqlErrors = (err, req, res, next) => {
   if (err.code === "23502" || err.code === "22P02") {
     res.status(400).send({ msg: "Bad Request" });
+  } else if (err.code === "23503") {
+    res.status(404).send({ msg: "Username Not Found", status: 404 });
   } else next(err);
 };
 

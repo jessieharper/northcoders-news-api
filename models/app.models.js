@@ -2,19 +2,19 @@ const fs = require("fs/promises");
 const db = require("../db/connection");
 
 exports.fetchTopics = () => {
-  return db.query(`SELECT * FROM topics`).then((topics) => {
-    return topics.rows;
+  return db.query(`SELECT * FROM topics`).then(({ rows }) => {
+    return rows;
   });
 };
 
 exports.fetchArticleById = (article_id) => {
   return db
     .query(`SELECT * FROM articles WHERE article_id = $1`, [article_id])
-    .then((article) => {
-      if (article.rows.length === 0) {
+    .then(({ rows }) => {
+      if (rows.length === 0) {
         return Promise.reject({ msg: "Article Not Found", status: 404 });
       }
-      return article.rows;
+      return rows;
     });
 };
 
@@ -25,8 +25,8 @@ exports.fetchArticles = () => {
   GROUP BY articles.article_id
   ORDER BY articles.created_at DESC
   `;
-  return db.query(queryStr).then((articles) => {
-    return articles.rows;
+  return db.query(queryStr).then(({ rows }) => {
+    return rows;
   });
 };
 
@@ -36,8 +36,8 @@ exports.fetchCommentsById = (article_id) => {
       `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC`,
       [article_id]
     )
-    .then((comments) => {
-      return comments.rows;
+    .then(({ rows }) => {
+      return rows;
     });
 };
 
@@ -47,7 +47,18 @@ exports.insertComments = (newComment, article_id) => {
       `INSERT INTO comments (author, body, article_id) VALUES ($1, $2, $3) RETURNING *`,
       [newComment.username, newComment.body, article_id]
     )
-    .then((comments) => {
-      return comments.rows[0];
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};
+
+exports.updateVotes = (newVotes, article_id) => {
+  return db
+    .query(`UPDATE articles SET votes = $1 WHERE article_id = $2 RETURNING *`, [
+      newVotes.inc_votes,
+      article_id,
+    ])
+    .then(({ rows }) => {
+      return rows[0];
     });
 };

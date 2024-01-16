@@ -169,6 +169,9 @@ describe("GET: /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("Bad Request");
       });
   });
+});
+
+describe("POST: /api/articles/:article_id/comments", () => {
   it("POST: 201 should allow a user to post a comment to a given article_id with the required properties and respond with the posted comment", () => {
     const newComment = {
       username: "lurker",
@@ -199,6 +202,19 @@ describe("GET: /api/articles/:article_id/comments", () => {
         expect(response.body.msg).toBe("Bad Request");
       });
   });
+  it("POST: 400 should respond with an appropriate status and error message when provided with an invalid article_id", () => {
+    const newComment = {
+      username: "lurker",
+      body: "this is cool.",
+    };
+    return request(app)
+      .post("/api/articles/invalid_id/comments")
+      .send(newComment)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request");
+      });
+  });
   it("POST: 404 should respond with an appropriate status and error message when provided with a non-existent article_id", () => {
     const newComment = {
       username: "lurker",
@@ -207,6 +223,80 @@ describe("GET: /api/articles/:article_id/comments", () => {
     return request(app)
       .post("/api/articles/999/comments")
       .send(newComment)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Article Not Found");
+      });
+  });
+  it("POST: 404 should respond with an appropriate status and error message when provided with a non-existent username", () => {
+    const newComment = {
+      username: "coolUsername",
+      body: "this is cool.",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Username Not Found");
+      });
+  });
+});
+
+describe("PATCH: /api/articles/:article_id", () => {
+  it("PATCH: 200 should allow a user to update the votes on a given article and respond with the updated article", () => {
+    const updatedVotes = {
+      inc_votes: 1,
+    };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(updatedVotes)
+      .expect(200)
+      .then((response) => {
+        const comment = response.body.comment;
+        expect(comment.title).toBe("Living in the shadow of a great man");
+        expect(comment.body).toBe("I find this existence challenging");
+        expect(comment.topic).toBe("mitch");
+        expect(comment.author).toBe("butter_bridge");
+        expect(comment.article_id).toBe(1);
+        expect(typeof comment.created_at).toBe("string");
+        expect(comment.votes).toBe(1);
+        expect(comment.article_img_url).toBe(
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        );
+      });
+  });
+  it("PATCH: 400 should respond with an appropriate error messge when provided a bad patch request", () => {
+    const updatedVotes = {
+      inc_votes: "one",
+    };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(updatedVotes)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request");
+      });
+  });
+  it("PATCH: 400 should respond with an appropriate status and error message when provided with an invalid article_id", () => {
+    const updatedVotes = {
+      inc_votes: 1,
+    };
+    return request(app)
+      .patch("/api/articles/invalid_id")
+      .send(updatedVotes)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request");
+      });
+  });
+  it("PATCH: 404 should respond with an appropriate status and error message when provided with valid but non-existent article_id", () => {
+    const updatedVotes = {
+      inc_votes: 1,
+    };
+    return request(app)
+      .patch("/api/articles/999")
+      .send(updatedVotes)
       .expect(404)
       .then((response) => {
         expect(response.body.msg).toBe("Article Not Found");
