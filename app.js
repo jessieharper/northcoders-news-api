@@ -8,6 +8,7 @@ const {
   postComments,
   patchVotes,
   deleteComments,
+  getUsers,
 } = require("./controllers/app.controllers");
 const {
   handleCustomErrors,
@@ -22,6 +23,7 @@ app.get("/api", getApi);
 app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id/comments", getCommentsById);
+app.get("/api/users", getUsers);
 
 app.post("/api/articles/:article_id/comments", postComments);
 

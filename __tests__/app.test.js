@@ -355,8 +355,22 @@ describe("DELETE: /api/comments/:comment_id", () => {
       .delete("/api/comments/invalid_id")
       .expect(400)
       .then((response) => {
-        console.log(response);
         expect(response.body.msg).toBe("Bad Request");
+      });
+  });
+});
+
+describe("GET: /api/users", () => {
+  it("GET: 200 should respond with an array of user objects with the correct properties", () => {
+    return request(app)
+      .get("/api/users")
+      .then((result) => {
+        expect(result.body.users.length).toBe(4);
+        result.body.users.forEach((user) => {
+          expect(user).toHaveProperty("username", expect.any(String));
+          expect(user).toHaveProperty("name", expect.any(String));
+          expect(user).toHaveProperty("avatar_url", expect.any(String));
+        });
       });
   });
 });
