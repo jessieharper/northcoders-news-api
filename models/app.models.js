@@ -12,7 +12,7 @@ exports.fetchArticleById = (article_id) => {
     .query(`SELECT * FROM articles WHERE article_id = $1`, [article_id])
     .then((article) => {
       if (article.rows.length === 0) {
-        return Promise.reject({ msg: "Article does not exist", status: 404 });
+        return Promise.reject({ msg: "Article Not Found", status: 404 });
       }
       return article.rows;
     });
@@ -30,7 +30,7 @@ exports.fetchArticles = () => {
   });
 };
 
-exports.fetchCommentsByArticleId = (article_id) => {
+exports.fetchCommentsById = (article_id) => {
   return db
     .query(
       `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC`,
@@ -38,5 +38,16 @@ exports.fetchCommentsByArticleId = (article_id) => {
     )
     .then((comments) => {
       return comments.rows;
+    });
+};
+
+exports.insertComments = (newComment, article_id) => {
+  return db
+    .query(
+      `INSERT INTO comments (author, body, article_id) VALUES ($1, $2, $3) RETURNING *`,
+      [newComment.username, newComment.body, article_id]
+    )
+    .then((comments) => {
+      return comments.rows[0];
     });
 };
