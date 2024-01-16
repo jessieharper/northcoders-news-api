@@ -26,6 +26,19 @@
       ]
     }
   },
+  "GET /api/users": {
+    "description": "serves an array of all users",
+    "queries": [],
+    "exampleResponse": {
+      "topics": [
+        {
+          "username": "username",
+          "name": "Name",
+          "avatar_url": "https://www.avatarurl.com/image.jpg"
+        }
+      ]
+    }
+  },
   "GET /api/articles/:article_id": {
     "description": "serves a single article as an object",
     "queries": [],
