@@ -8,6 +8,17 @@ const request = require("supertest");
 beforeEach(() => seed(data));
 afterAll(() => db.end());
 
+describe("ALL: /*", () => {
+  it("ALL: 404 should respond with an apropriate error message when passed a non-existent url", () => {
+    return request(app)
+      .get("/invalid_url")
+      .expect(404)
+      .then((result) => {
+        expect(result.body.msg).toBe("Not Found");
+      });
+  });
+});
+
 describe("GET: /api/topics", () => {
   it("GET: 200 should respond with an array of topic objects", () => {
     return request(app)
@@ -322,6 +333,30 @@ describe("PATCH: /api/articles/:article_id", () => {
       .expect(404)
       .then((response) => {
         expect(response.body.msg).toBe("Article Not Found");
+      });
+  });
+});
+
+describe("DELETE: /api/comments/:comment_id", () => {
+  it("DELETE: 204 should delete the specified comment and respond with the correct status", () => {
+    return request(app).delete("/api/comments/1").expect(204);
+  });
+  it("DELETE: 404 should respond with an appropriate status and error message when provided with valid but non-existent comment_id", () => {
+    return request(app)
+      .delete("/api/comments/999")
+      .expect(404)
+      .then((response) => {
+        console.log(response);
+        expect(response.body.msg).toBe("Comment Not Found");
+      });
+  });
+  it("DELETE: 400 should respond with an appropriate status and error message when provided with an invalid comment_id", () => {
+    return request(app)
+      .delete("/api/comments/invalid_id")
+      .expect(400)
+      .then((response) => {
+        console.log(response);
+        expect(response.body.msg).toBe("Bad Request");
       });
   });
 });
