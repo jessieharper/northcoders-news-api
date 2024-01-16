@@ -7,6 +7,7 @@ const {
   getCommentsById,
   postComments,
   patchVotes,
+  deleteComments,
 } = require("./controllers/app.controllers");
 const {
   handleCustomErrors,
@@ -21,8 +22,15 @@ app.get("/api", getApi);
 app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id/comments", getCommentsById);
+
 app.post("/api/articles/:article_id/comments", postComments);
+
 app.patch("/api/articles/:article_id", patchVotes);
+app.delete("/api/comments/:comment_id", deleteComments);
+
+app.all("/*", (req, res) => {
+  res.status(404).send({ msg: "Not Found", status: 404 });
+});
 
 app.use(handleCustomErrors);
 app.use(handlePsqlErrors);

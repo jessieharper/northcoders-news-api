@@ -5,6 +5,7 @@ const {
   fetchCommentsById,
   insertComments,
   updateVotes,
+  removeComments,
 } = require("../models/app.models");
 
 const endpoints = require("../endpoints.json");
@@ -83,6 +84,17 @@ exports.patchVotes = (req, res, next) => {
     .then((response) => {
       const comment = response[1];
       res.status(200).send({ comment });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.deleteComments = (req, res, next) => {
+  const { comment_id } = req.params;
+  removeComments(comment_id)
+    .then((response) => {
+      res.status(204).send({ response });
     })
     .catch((err) => {
       next(err);
