@@ -41,16 +41,25 @@ describe("GET: /api/articles/:article_id", () => {
       .get("/api/articles/1")
       .expect(200)
       .then((result) => {
-        result.body.articles.forEach((article) => {
-          expect(article).toHaveProperty("title", expect.any(String));
-          expect(article).toHaveProperty("topic", expect.any(String));
-          expect(article).toHaveProperty("author", expect.any(String));
-          expect(article).toHaveProperty("body", expect.any(String));
-          expect(article).toHaveProperty("votes", expect.any(Number));
-          expect(article).toHaveProperty("article_img_url", expect.any(String));
-        });
+        const article = result.body.articles[0];
+        expect(article).toHaveProperty(
+          "title",
+          "Living in the shadow of a great man"
+        );
+        expect(article).toHaveProperty("topic", "mitch");
+        expect(article).toHaveProperty("author", "butter_bridge");
+        expect(article).toHaveProperty(
+          "body",
+          "I find this existence challenging"
+        );
+        expect(article).toHaveProperty("votes", 100);
+        expect(article).toHaveProperty(
+          "article_img_url",
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        );
       });
   });
+
   it("GET: 404 should respond with an appropriate error message when provided a valid id that does not exist", () => {
     return request(app)
       .get("/api/articles/999")
@@ -105,6 +114,59 @@ describe("GET: /api/articles", () => {
         result.body.articles.forEach((article) => {
           expect(article).not.toHaveProperty("body");
         });
+      });
+  });
+});
+
+describe("GET: /api/articles/:article_id/comments", () => {
+  it("GET: 200 should respond with an array of comments for the given article_id with the correct properties ", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then((result) => {
+        expect(result.body.comments.length).toBe(11);
+        result.body.comments.forEach((comment) => {
+          expect(comment).toHaveProperty("comment_id", expect.any(Number));
+          expect(comment).toHaveProperty("votes", expect.any(Number));
+          expect(comment).toHaveProperty("created_at", expect.any(String));
+          expect(comment).toHaveProperty("author", expect.any(String));
+          expect(comment).toHaveProperty("body", expect.any(String));
+          expect(comment).toHaveProperty("article_id", 1);
+        });
+      });
+  });
+  it("GET: 200 should respond with an array of comments sorted by date in descending order", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toBeSortedBy("created_at", {
+          descending: true,
+        });
+      });
+  });
+  it("GET: 200 should respond with an empty array when provided a valid article_id, but the article does not have any comments", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toEqual([]);
+      });
+  });
+  it("GET: 404 should respond with an appropriate error message when provided a non-existent article", () => {
+    return request(app)
+      .get("/api/articles/999/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article does not exist");
+      });
+  });
+  it("GET: 400 should respond with an appropriate error message when provided an invalid article_id", () => {
+    return request(app)
+      .get("/api/articles/invalid_id/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid id");
       });
   });
 });
