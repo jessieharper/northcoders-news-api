@@ -244,7 +244,7 @@ describe("POST: /api/articles/:article_id/comments", () => {
 });
 
 describe("PATCH: /api/articles/:article_id", () => {
-  it("PATCH: 200 should allow a user to update the votes on a given article and respond with the updated article", () => {
+  it("PATCH: 200 should allow a user to increment the votes on a given article and respond with the updated article", () => {
     const updatedVotes = {
       inc_votes: 1,
     };
@@ -261,6 +261,28 @@ describe("PATCH: /api/articles/:article_id", () => {
         expect(comment.article_id).toBe(1);
         expect(typeof comment.created_at).toBe("string");
         expect(comment.votes).toBe(1);
+        expect(comment.article_img_url).toBe(
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        );
+      });
+  });
+  it("PATCH: 200 should allow a user to decrement the votes on a given article and respond with the updated article", () => {
+    const updatedVotes = {
+      inc_votes: -1,
+    };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(updatedVotes)
+      .expect(200)
+      .then((response) => {
+        const comment = response.body.comment;
+        expect(comment.title).toBe("Living in the shadow of a great man");
+        expect(comment.body).toBe("I find this existence challenging");
+        expect(comment.topic).toBe("mitch");
+        expect(comment.author).toBe("butter_bridge");
+        expect(comment.article_id).toBe(1);
+        expect(typeof comment.created_at).toBe("string");
+        expect(comment.votes).toBe(-1);
         expect(comment.article_img_url).toBe(
           "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
         );
