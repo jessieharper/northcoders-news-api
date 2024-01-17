@@ -10,6 +10,7 @@ const {
 } = require("../models/app.models");
 
 const endpoints = require("../endpoints.json");
+const { checkExists } = require("../utils/check-exists");
 
 exports.getTopics = (req, res, next) => {
   fetchTopics()
@@ -37,9 +38,19 @@ exports.getArticleById = (req, res, next) => {
 exports.getArticles = (req, res, next) => {
   const { topic } = req.query;
   const query = Object.keys(req.query)[0];
+  const fetchArticlesQuery = fetchArticles(query, topic);
 
-  fetchArticles(query, topic)
-    .then((articles) => res.status(200).send({ articles }))
+  let queries = [fetchArticlesQuery];
+
+  if (topic) {
+    queries.push(checkExists("topics", "slug", topic));
+  }
+
+  Promise.all(queries)
+    .then((response) => {
+      const articles = response[0];
+      res.status(200).send({ articles });
+    })
     .catch((err) => {
       next(err);
     });

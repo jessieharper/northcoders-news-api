@@ -136,10 +136,21 @@ describe("GET: /api/articles", () => {
   });
   it("GET: 200 should respond with an array of articles filtered by topic when the user provides a topic query", () => {
     return request(app)
-      .get("/api/articles?topic=cats")
+      .get("/api/articles?topic=mitch")
       .expect(200)
       .then(({ body }) => {
-        expect(body.articles[0]).toHaveProperty("topic", "cats");
+        expect(body.articles.length).toBe(12);
+        body.articles.forEach((article) => {
+          expect(article).toHaveProperty("topic", "mitch");
+        });
+      });
+  });
+  it("GET: 200 should respond with an empty array when provided a valid query with no corresponding articles", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toEqual([]);
       });
   });
   it("GET: 404 should respond with an appropriate error message when passed a non-existent query", () => {
@@ -147,7 +158,7 @@ describe("GET: /api/articles", () => {
       .get("/api/articles?topic=northcoders")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Topic Not Found");
+        expect(body.msg).toBe("Not Found");
       });
   });
   it("GET: 400 should respond with an appropriate error message when passed an invalid query", () => {
