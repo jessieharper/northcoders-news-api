@@ -70,7 +70,6 @@ describe("GET: /api/articles/:article_id", () => {
         );
       });
   });
-
   it("GET: 404 should respond with an appropriate error message when provided a valid id that does not exist", () => {
     return request(app)
       .get("/api/articles/999")
@@ -85,6 +84,14 @@ describe("GET: /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad Request");
+      });
+  });
+  it("GET: 200 should respond with an article object that contains a comment_count property", () => {
+    return request(app)
+      .get("/api/articles/3")
+      .expect(200)
+      .then((result) => {
+        expect(result.body.articles[0]).toHaveProperty("comment_count", "2");
       });
   });
 });
