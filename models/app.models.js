@@ -18,14 +18,26 @@ exports.fetchArticleById = (article_id) => {
     });
 };
 
-exports.fetchArticles = () => {
-  let queryStr = `
-  SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comment_id) AS comment_count FROM articles
-  LEFT JOIN comments ON comments.article_id = articles.article_id
-  GROUP BY articles.article_id
-  ORDER BY articles.created_at DESC
-  `;
-  return db.query(queryStr).then(({ rows }) => {
+exports.fetchArticles = (query, topic) => {
+  const validQueries = ["topic"];
+
+  if (query && !validQueries.includes(query)) {
+    return Promise.reject({ msg: "Bad Request", status: 400 });
+  }
+
+  let queryStr = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comment_id) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id`;
+  const queryParameters = [];
+  if (topic) {
+    queryStr += ` WHERE topic = $1`;
+    queryParameters.push(topic);
+  }
+  queryStr += ` GROUP BY articles.article_id
+  ORDER BY articles.created_at DESC`;
+
+  return db.query(queryStr, queryParameters).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({ msg: "Topic Not Found", status: 404 });
+    }
     return rows;
   });
 };
@@ -53,14 +65,22 @@ exports.insertComments = (newComment, article_id) => {
 };
 
 exports.updateVotes = (newVotes, article_id) => {
-  return db
-    .query(`UPDATE articles SET votes = $1 WHERE article_id = $2 RETURNING *`, [
-      newVotes.inc_votes,
-      article_id,
-    ])
-    .then(({ rows }) => {
-      return rows[0];
-    });
+  if (!newVotes.inc_votes) {
+    return db
+      .query(`SELECT * FROM articles WHERE article_id = $1`, [article_id])
+      .then(({ rows }) => {
+        return rows[0];
+      });
+  } else {
+    return db
+      .query(
+        `UPDATE articles SET votes = $1 WHERE article_id = $2 RETURNING *`,
+        [newVotes.inc_votes, article_id]
+      )
+      .then(({ rows }) => {
+        return rows[0];
+      });
+  }
 };
 
 exports.removeComments = (comment_id) => {

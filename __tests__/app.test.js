@@ -127,6 +127,30 @@ describe("GET: /api/articles", () => {
         });
       });
   });
+  it("GET: 200 should respond with an array of articles filtered by topic when the user provides a topic query", () => {
+    return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles[0]).toHaveProperty("topic", "cats");
+      });
+  });
+  it("GET: 404 should respond with an appropriate error message when passed a non-existent query", () => {
+    return request(app)
+      .get("/api/articles?topic=northcoders")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Topic Not Found");
+      });
+  });
+  it("GET: 400 should respond with an appropriate error message when passed an invalid query", () => {
+    return request(app)
+      .get("/api/articles?1234=mitch")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
 });
 
 describe("GET: /api/articles/:article_id/comments", () => {
@@ -299,6 +323,26 @@ describe("PATCH: /api/articles/:article_id", () => {
         );
       });
   });
+  it("PATCH: 200 should respond with the comment when no inc_votes is sent with the request", () => {
+    const updatedVotes = {};
+    return request(app)
+      .patch("/api/articles/1")
+      .send(updatedVotes)
+      .expect(200)
+      .then((response) => {
+        const comment = response.body.comment;
+        expect(comment.title).toBe("Living in the shadow of a great man");
+        expect(comment.body).toBe("I find this existence challenging");
+        expect(comment.topic).toBe("mitch");
+        expect(comment.author).toBe("butter_bridge");
+        expect(comment.article_id).toBe(1);
+        expect(typeof comment.created_at).toBe("string");
+        expect(comment.votes).toBe(100);
+        expect(comment.article_img_url).toBe(
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        );
+      });
+  });
   it("PATCH: 400 should respond with an appropriate error messge when provided a bad patch request", () => {
     const updatedVotes = {
       inc_votes: "one",
@@ -346,7 +390,6 @@ describe("DELETE: /api/comments/:comment_id", () => {
       .delete("/api/comments/999")
       .expect(404)
       .then((response) => {
-        console.log(response);
         expect(response.body.msg).toBe("Comment Not Found");
       });
   });
