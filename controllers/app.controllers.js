@@ -35,10 +35,12 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  fetchArticles()
+  const { topic } = req.query;
+  const query = Object.keys(req.query)[0];
+
+  fetchArticles(query, topic)
     .then((articles) => res.status(200).send({ articles }))
     .catch((err) => {
-      console.log(err);
       next(err);
     });
 };
@@ -94,8 +96,8 @@ exports.patchVotes = (req, res, next) => {
 exports.deleteComments = (req, res, next) => {
   const { comment_id } = req.params;
   removeComments(comment_id)
-    .then((response) => {
-      res.status(204).send({ response });
+    .then(() => {
+      res.status(204).send();
     })
     .catch((err) => {
       next(err);
