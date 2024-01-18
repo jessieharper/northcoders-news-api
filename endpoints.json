@@ -38,6 +38,19 @@
       ]
     }
   },
+  "GET /api/users/:username": {
+    "description": "serves a specific user object",
+    "queries": [],
+    "exampleResponse": {
+      "topics": [
+        {
+          "username": "username",
+          "name": "Name",
+          "avatar_url": "https://www.avatarurl.com/image.jpg"
+        }
+      ]
+    }
+  },
   "GET /api/articles/:article_id": {
     "description": "serves a single article as an object",
     "queries": [],
@@ -98,6 +111,22 @@
       "username": "butter_bridge",
       "body": "Text from the comment..."
     },
+    "exampleResponse": {
+      "comment": [
+        {
+          "comment_id": 1,
+          "votes": 2,
+          "author": "butter_bridge",
+          "body": "Text from the comment...",
+          "created_at": "2018-05-30T15:59:13.341Z",
+          "article_id": 1
+        }
+      ]
+    }
+  },
+  "PATCH /api/comment/:comment_id": {
+    "description": "allows the client to update the votes on a given comment",
+    "queries": [],
     "exampleResponse": {
       "comment": [
         {

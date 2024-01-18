@@ -80,7 +80,7 @@ exports.insertComments = (newComment, article_id) => {
     });
 };
 
-exports.updateVotes = (newVotes, article_id) => {
+exports.updateArticleVotes = (newVotes, article_id) => {
   if (!newVotes.inc_votes) {
     return db
       .query(`SELECT * FROM articles WHERE article_id = $1`, [article_id])
@@ -121,4 +121,23 @@ exports.fetchUserByUsername = (username) => {
     .then(({ rows }) => {
       return rows[0];
     });
+};
+
+exports.updateCommentVotes = (comment_id, newVotes) => {
+  if (!newVotes.inc_votes) {
+    return db
+      .query(`SELECT * FROM comments WHERE comment_id = $1`, [comment_id])
+      .then(({ rows }) => {
+        return rows[0];
+      });
+  } else {
+    return db
+      .query(
+        `UPDATE comments SET votes = $1 WHERE comment_id = $2 RETURNING *`,
+        [newVotes.inc_votes, comment_id]
+      )
+      .then(({ rows }) => {
+        return rows[0];
+      });
+  }
 };

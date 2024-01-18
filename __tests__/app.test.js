@@ -496,3 +496,76 @@ describe("GET: /api/users/:username", () => {
       });
   });
 });
+
+describe("PATCH: /api/comments/:comment_id", () => {
+  it("PATCH: 200 should allow a user to increment the votes on a given comment and responds with the updated comment", () => {
+    const updatedVotes = {
+      inc_votes: 10,
+    };
+    return request(app)
+      .patch("/api/comments/5")
+      .send(updatedVotes)
+      .expect(200)
+      .then((response) => {
+        const comment = response.body.comment;
+        expect(comment).toHaveProperty("body", "I hate streaming noses");
+        expect(comment).toHaveProperty("votes", 10);
+        expect(comment).toHaveProperty("author", "icellusedkars");
+        expect(comment).toHaveProperty("article_id", 1);
+      });
+  });
+  it("PATCH: 200 should allow a user to decrement the votes on a given comment and responds with the updated comment", () => {
+    const updatedVotes = {
+      inc_votes: -10,
+    };
+    return request(app)
+      .patch("/api/comments/5")
+      .send(updatedVotes)
+      .expect(200)
+      .then((response) => {
+        const comment = response.body.comment;
+        expect(comment).toHaveProperty("body", "I hate streaming noses");
+        expect(comment).toHaveProperty("votes", -10);
+        expect(comment).toHaveProperty("author", "icellusedkars");
+        expect(comment).toHaveProperty("article_id", 1);
+      });
+  });
+  it("PATCH: 200 should respond with the comment when no inc_votes is sent with the request", () => {
+    const updatedVotes = {};
+    return request(app)
+      .patch("/api/comments/5")
+      .send(updatedVotes)
+      .expect(200)
+      .then((response) => {
+        const comment = response.body.comment;
+        expect(comment).toHaveProperty("body", "I hate streaming noses");
+        expect(comment).toHaveProperty("votes", 0);
+        expect(comment).toHaveProperty("author", "icellusedkars");
+        expect(comment).toHaveProperty("article_id", 1);
+      });
+  });
+  it("PATCH: 400 should respond with an appropriate status and error message when provided with an invalid comment_id", () => {
+    const updatedVotes = {
+      inc_votes: 1,
+    };
+    return request(app)
+      .patch("/api/comments/invalid_id")
+      .send(updatedVotes)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request");
+      });
+  });
+  it("PATCH: 404 should respond with an appropriate status and error message when provided with valid but non-existent comment_id", () => {
+    const updatedVotes = {
+      inc_votes: 1,
+    };
+    return request(app)
+      .patch("/api/comments/999")
+      .send(updatedVotes)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Not Found");
+      });
+  });
+});

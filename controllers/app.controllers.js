@@ -4,10 +4,11 @@ const {
   fetchArticles,
   fetchCommentsById,
   insertComments,
-  updateVotes,
+  updateArticleVotes,
   removeComments,
   fetchUsers,
   fetchUserByUsername,
+  updateCommentVotes,
 } = require("../models/app.models");
 
 const endpoints = require("../endpoints.json");
@@ -94,12 +95,12 @@ exports.postComments = (req, res, next) => {
     });
 };
 
-exports.patchVotes = (req, res, next) => {
+exports.patchArticleVotes = (req, res, next) => {
   const { article_id } = req.params;
   const newVotes = req.body;
 
   const articleExistenceQuery = fetchArticleById(article_id);
-  const updateQuery = updateVotes(newVotes, article_id);
+  const updateQuery = updateArticleVotes(newVotes, article_id);
   Promise.all([articleExistenceQuery, updateQuery])
     .then((response) => {
       const comment = response[1];
@@ -141,6 +142,23 @@ exports.getUserByUsername = (req, res, next) => {
     .then((response) => {
       const user = response[1];
       res.status(200).send({ user });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.patchCommentVotes = (req, res, next) => {
+  const { comment_id } = req.params;
+  const newVotes = req.body;
+  const checkCommentExists = checkExists("comments", "comment_id", comment_id);
+  const updateCommentQuery = updateCommentVotes(comment_id, newVotes);
+  const queries = [checkCommentExists, updateCommentQuery];
+
+  Promise.all(queries)
+    .then((response) => {
+      const comment = response[1];
+      res.status(200).send({ comment });
     })
     .catch((err) => {
       next(err);
