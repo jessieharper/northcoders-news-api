@@ -472,3 +472,27 @@ describe("GET: /api/users", () => {
       });
   });
 });
+
+describe("GET: /api/users/:username", () => {
+  it("GET: 200 should respond with user object that contains the correct properties", () => {
+    return request(app)
+      .get("/api/users/icellusedkars")
+      .then((result) => {
+        const user = result.body.user;
+        expect(user).toHaveProperty("username", "icellusedkars");
+        expect(user).toHaveProperty("name", "sam");
+        expect(user).toHaveProperty(
+          "avatar_url",
+          "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
+        );
+      });
+  });
+  it("GET: 404 should respond with an appropriate status and error message when provided with an non-existent username", () => {
+    return request(app)
+      .delete("/api/users/coolUsername")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Not Found");
+      });
+  });
+});

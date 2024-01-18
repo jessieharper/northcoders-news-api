@@ -7,6 +7,7 @@ const {
   updateVotes,
   removeComments,
   fetchUsers,
+  fetchUserByUsername,
 } = require("../models/app.models");
 
 const endpoints = require("../endpoints.json");
@@ -124,6 +125,22 @@ exports.getUsers = (req, res, next) => {
   fetchUsers()
     .then((users) => {
       res.status(200).send({ users });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.getUserByUsername = (req, res, next) => {
+  const { username } = req.params;
+  const checkUserExists = checkExists("users", "username", username);
+  const fetchUserQuery = fetchUserByUsername(username);
+  const queries = [checkUserExists, fetchUserQuery];
+
+  Promise.all(queries)
+    .then((response) => {
+      const user = response[1];
+      res.status(200).send({ user });
     })
     .catch((err) => {
       next(err);
