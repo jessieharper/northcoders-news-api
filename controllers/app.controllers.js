@@ -9,6 +9,7 @@ const {
   fetchUsers,
   fetchUserByUsername,
   updateCommentVotes,
+  insertArticles,
 } = require("../models/app.models");
 
 const endpoints = require("../endpoints.json");
@@ -159,6 +160,23 @@ exports.patchCommentVotes = (req, res, next) => {
     .then((response) => {
       const comment = response[1];
       res.status(200).send({ comment });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.postArticles = (req, res, next) => {
+  const newArticle = req.body;
+  const checkTopicExists = checkExists("topics", "slug", newArticle.topic);
+
+  const insertArticleQuery = insertArticles(newArticle);
+  const queries = [checkTopicExists, insertArticleQuery];
+
+  Promise.all(queries)
+    .then((response) => {
+      const article = response[1];
+      res.status(201).send({ article });
     })
     .catch((err) => {
       next(err);

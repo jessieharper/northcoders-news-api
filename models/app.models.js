@@ -141,3 +141,21 @@ exports.updateCommentVotes = (comment_id, newVotes) => {
       });
   }
 };
+
+exports.insertArticles = (newArticle) => {
+  return db
+    .query(
+      `INSERT INTO articles (author, title, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *;`,
+      [
+        newArticle.author,
+        newArticle.title,
+        newArticle.body,
+        newArticle.topic,
+        newArticle.article_img_url,
+      ]
+    )
+    .then(({ rows }) => {
+      console.log(rows[0]);
+      return rows[0];
+    });
+};

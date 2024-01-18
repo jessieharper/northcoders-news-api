@@ -569,3 +569,76 @@ describe("PATCH: /api/comments/:comment_id", () => {
       });
   });
 });
+
+describe("POST: /api/articles", () => {
+  it("POST: 201 should allow a user to post a new article", () => {
+    const newArticle = {
+      body: "This is only a test. No need for alarm. Go about your daily business 👀",
+      author: "butter_bridge",
+      title: "Just a test.",
+      topic: "mitch",
+      article_img_url:
+        "https://img.buzzfeed.com/buzzfeed-static/static/2018-10/31/10/asset/buzzfeed-prod-web-04/sub-buzz-30364-1540997156-7.jpg?downsize=600:*&output-format=auto&output-quality=auto",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then((response) => {
+        const article = response.body.article;
+        expect(article.body).toBe(newArticle.body);
+        expect(article.author).toBe("butter_bridge");
+        expect(article.title).toBe("Just a test.");
+        expect(article.article_id).toBe(14);
+        expect(typeof article.created_at).toBe("string");
+        expect(article.article_img_url).toBe(newArticle.article_img_url);
+      });
+  });
+  it("POST: 400 should respond with an appropriate status and error message when provided with a bad article request (no body)", () => {
+    const newArticle = {
+      author: "Anon",
+      topic: "mitch",
+      article_img_url:
+        "https://img.buzzfeed.com/buzzfeed-static/static/2018-10/31/10/asset/buzzfeed-prod-web-04/sub-buzz-30364-1540997156-7.jpg?downsize=600:*&output-format=auto&output-quality=auto",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request");
+      });
+  });
+  it("POST: 404 should respond with an appropriate status and error message when provided with a non-existent topic", () => {
+    const newArticle = {
+      body: "This is only a test. No need for alarm. Go about your daily business 👀",
+      author: "butter_bridge",
+      title: "Just a test.",
+      topic: "nonsense",
+      article_img_url:
+        "https://img.buzzfeed.com/buzzfeed-static/static/2018-10/31/10/asset/buzzfeed-prod-web-04/sub-buzz-30364-1540997156-7.jpg?downsize=600:*&output-format=auto&output-quality=auto",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Not Found");
+      });
+  });
+  it("POST: 404 should respond with an appropriate status and error message when provided with a non-existent username", () => {
+    const newArticle = {
+      body: "This is only a test. No need for alarm. Go about your daily business 👀",
+      author: "beefboi",
+      title: "Just a test.",
+      topic: "mitch",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Username Not Found");
+      });
+  });
+});

@@ -7,10 +7,11 @@ Clear instructions of how to clone, install dependencies, seed local database, a
 Welcome to my Northcoders News API project! The aim of this project was to build an API that mimicked a real-world backend news service such as Reddit. You can use this API to:
 
 - Get articles, users, comments, and topics
+- Post articles and topics
 - Filter articles by topic
 - Sort articles by title, topic, author, and date created, in descending or ascending order (sorts by DESC by default)
 - Patch, post, and delete comments
-- Upvote or downvote articles
+- Upvote or downvote articles and comments
 
 You will need to have Node.js (v20.6.1 or higher) and Postgres (v16 or higher) to run the project.
 
