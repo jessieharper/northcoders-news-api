@@ -42,7 +42,8 @@ exports.fetchArticles = (
     (query && !validQueries.includes(query)) ||
     !validQueries.includes(sort_by) ||
     !validQueries.includes(order) ||
-    (limit && !/^[0-9]+$/.test(limit))
+    (limit && !/^[0-9]+$/.test(limit)) ||
+    (p && !/^[0-9]+$/.test(p))
   ) {
     return Promise.reject({ msg: "Bad Request", status: 400 });
   }
@@ -65,6 +66,10 @@ exports.fetchArticles = (
     queryStr += ` LIMIT $2`;
     queryParameters.push(limit);
   }
+  if (p) {
+    queryStr += ` OFFSET $2`;
+    queryParameters.push(p);
+  }
 
   return db.query(queryStr, queryParameters).then(({ rows }) => {
     return rows;
@@ -82,7 +87,7 @@ exports.fetchCommentsById = (article_id) => {
     });
 };
 
-exports.insertComments = (newComment, article_id) => {
+exports.addComments = (newComment, article_id) => {
   return db
     .query(
       `INSERT INTO comments (author, body, article_id) VALUES ($1, $2, $3) RETURNING *`,
@@ -155,7 +160,7 @@ exports.updateCommentVotes = (comment_id, newVotes) => {
   }
 };
 
-exports.insertArticles = (newArticle) => {
+exports.addArticles = (newArticle) => {
   return db
     .query(
       `INSERT INTO articles (author, title, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *;`,
@@ -166,6 +171,17 @@ exports.insertArticles = (newArticle) => {
         newArticle.topic,
         newArticle.article_img_url,
       ]
+    )
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};
+
+exports.addTopics = (newTopic) => {
+  return db
+    .query(
+      `INSERT INTO topics (slug, description) VALUES ($1, $2) RETURNING *;`,
+      [newTopic.slug, newTopic.description]
     )
     .then(({ rows }) => {
       return rows[0];

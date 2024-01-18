@@ -230,6 +230,33 @@ describe("GET: /api/articles", () => {
         expect(body.msg).toBe("Bad Request");
       });
   });
+  xit("GET: 200 should respond with array on a specific page when passed a page query", () => {
+    return request(app)
+      .get("/api/articles?limit=5&p=10")
+      .expect(200)
+      .then(({ body }) => {
+        const article = body.articles[0];
+        expect(article.title).toBe(
+          "Seven inspirational thought leaders from Manchester UK"
+        );
+      });
+  });
+  xit("GET: 200 should respond with an array of all of the articles when provided a valid p query that is greater than the amount of pages", () => {
+    return request(app)
+      .get("/api/articles?limit=13&p=999")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(13);
+      });
+  });
+  xit("GET: 400 should respond with an appropriate error message when passed an invalid p query", () => {
+    return request(app)
+      .get("/api/articles?limit=5&p=mitch")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
 });
 
 describe("GET: /api/articles/:article_id/comments", () => {
@@ -663,6 +690,36 @@ describe("POST: /api/articles", () => {
       .expect(404)
       .then((response) => {
         expect(response.body.msg).toBe("Username Not Found");
+      });
+  });
+});
+
+describe("POST: /api/topics", () => {
+  it("POST: 201 should allow a user to post a new topic", () => {
+    const newTopic = {
+      slug: "nerfs",
+      description: "surf n' nerf.",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(201)
+      .then((response) => {
+        const topic = response.body.topic;
+        expect(topic.slug).toBe("nerfs");
+        expect(topic.description).toBe("surf n' nerf.");
+      });
+  });
+  it("POST: 400 should respond with an appropriate status and error message when provided with a bad topic request (no slug)", () => {
+    const newTopic = {
+      description: "surf n' nerf",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request");
       });
   });
 });

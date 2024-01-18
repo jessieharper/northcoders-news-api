@@ -3,13 +3,14 @@ const {
   fetchArticleById,
   fetchArticles,
   fetchCommentsById,
-  insertComments,
+  addComments,
   updateArticleVotes,
   removeComments,
   fetchUsers,
   fetchUserByUsername,
   updateCommentVotes,
-  insertArticles,
+  addArticles,
+  addTopics,
 } = require("../models/app.models");
 
 const endpoints = require("../endpoints.json");
@@ -96,7 +97,7 @@ exports.postComments = (req, res, next) => {
   const { article_id } = req.params;
   const newComment = req.body;
   const articleExistenceQuery = fetchArticleById(article_id);
-  const insertQuery = insertComments(newComment, article_id);
+  const insertQuery = addComments(newComment, article_id);
 
   Promise.all([articleExistenceQuery, insertQuery])
     .then((response) => {
@@ -182,13 +183,26 @@ exports.postArticles = (req, res, next) => {
   const newArticle = req.body;
   const checkTopicExists = checkExists("topics", "slug", newArticle.topic);
 
-  const insertArticleQuery = insertArticles(newArticle);
+  const insertArticleQuery = addArticles(newArticle);
   const queries = [checkTopicExists, insertArticleQuery];
 
   Promise.all(queries)
     .then((response) => {
       const article = response[1];
       res.status(201).send({ article });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.postTopics = (req, res, next) => {
+  const newTopic = req.body;
+
+  addTopics(newTopic)
+    .then((response) => {
+      const topic = response;
+      res.status(201).send({ topic });
     })
     .catch((err) => {
       next(err);
