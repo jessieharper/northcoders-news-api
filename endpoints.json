@@ -11,7 +11,16 @@
   },
   "GET /api/articles": {
     "description": "serves an array of articles filtered by a query. If the query is omitted, serves an array of all articles, which can be sorted by certain queries in ascending and descending order",
-    "queries": ["author", "topic", "sort_by", "order", "created_at", "title"],
+    "queries": [
+      "author",
+      "topic",
+      "sort_by",
+      "order",
+      "created_at",
+      "title",
+      "limit",
+      "p"
+    ],
     "exampleResponse": {
       "articles": [
         {
@@ -68,26 +77,6 @@
       ]
     }
   },
-  "PATCH /api/articles/:article_id": {
-    "description": "allows the client to update the votes on a given article",
-    "queries": [],
-    "exampleRequest": {
-      "inc_votes": 1
-    },
-    "exampleResponse": {
-      "article": [
-        {
-          "title": "Living in the shadow of a great man",
-          "topic": "mitch",
-          "author": "butter_bridge",
-          "body": "Text from the article..",
-          "created_at": "2018-05-30T15:59:13.341Z",
-          "votes": 1,
-          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=70"
-        }
-      ]
-    }
-  },
   "GET /api/articles/:article_id/comments": {
     "description": "serves an array of comments for a given article",
     "queries": [],
@@ -120,6 +109,29 @@
           "body": "Text from the comment...",
           "created_at": "2018-05-30T15:59:13.341Z",
           "article_id": 1
+        }
+      ]
+    }
+  },
+  "POST /api/articles": {
+    "description": "allows the client to post a new article",
+    "queries": [],
+    "exampleRequest": {
+      "title": "Living in the shadow of a great man",
+      "topic": "mitch",
+      "author": "butter_bridge",
+      "body": "Text from the article.."
+    },
+    "exampleResponse": {
+      "article": [
+        {
+          "title": "Living in the shadow of a great man",
+          "topic": "mitch",
+          "author": "butter_bridge",
+          "body": "Text from the article..",
+          "created_at": "2018-05-30T15:59:13.341Z",
+          "votes": 1,
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=70"
         }
       ]
     }

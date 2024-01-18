@@ -24,6 +24,8 @@ exports.fetchArticleById = (article_id) => {
 exports.fetchArticles = (
   sort_by = "created_at",
   order = "DESC",
+  limit,
+  p,
   query,
   topic
 ) => {
@@ -39,19 +41,30 @@ exports.fetchArticles = (
   if (
     (query && !validQueries.includes(query)) ||
     !validQueries.includes(sort_by) ||
-    !validQueries.includes(order)
+    !validQueries.includes(order) ||
+    (limit && !/^[0-9]+$/.test(limit))
   ) {
     return Promise.reject({ msg: "Bad Request", status: 400 });
   }
 
   let queryStr = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comment_id) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id`;
+
   const queryParameters = [];
   if (topic) {
     queryStr += ` WHERE topic = $1`;
     queryParameters.push(topic);
   }
+
   queryStr += ` GROUP BY articles.article_id
   ORDER BY articles.${sort_by} ${order}`;
+
+  if (!topic && limit) {
+    queryStr += ` LIMIT $1`;
+    queryParameters.push(limit);
+  } else if (topic && limit) {
+    queryStr += ` LIMIT $2`;
+    queryParameters.push(limit);
+  }
 
   return db.query(queryStr, queryParameters).then(({ rows }) => {
     return rows;
@@ -155,7 +168,6 @@ exports.insertArticles = (newArticle) => {
       ]
     )
     .then(({ rows }) => {
-      console.log(rows[0]);
       return rows[0];
     });
 };

@@ -206,6 +206,30 @@ describe("GET: /api/articles", () => {
         expect(body.msg).toBe("Bad Request");
       });
   });
+  it("GET: 200 should respond with array that contains a specified amount of articles when the user provides a limit query", () => {
+    return request(app)
+      .get("/api/articles?limit=2")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(2);
+      });
+  });
+  it("GET: 200 should respond with an array of all of the articles when provided a valid limit query that is greater than the total articles", () => {
+    return request(app)
+      .get("/api/articles?limit=999")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(13);
+      });
+  });
+  it("GET: 400 should respond with an appropriate error message when passed an invalid limit query", () => {
+    return request(app)
+      .get("/api/articles?limit=mitch")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
 });
 
 describe("GET: /api/articles/:article_id/comments", () => {

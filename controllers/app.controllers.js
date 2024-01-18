@@ -39,15 +39,27 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  const { sort_by, order, topic } = req.query;
+  const { sort_by, order, limit, p, topic } = req.query;
   const queryKey = Object.keys(req.query)[0];
   let query;
 
-  if (queryKey !== "sort_by" && queryKey !== "order") {
+  if (
+    queryKey !== "sort_by" &&
+    queryKey !== "order" &&
+    queryKey !== "limit" &&
+    queryKey !== "p"
+  ) {
     query = queryKey;
   }
 
-  const fetchArticlesQuery = fetchArticles(sort_by, order, query, topic);
+  const fetchArticlesQuery = fetchArticles(
+    sort_by,
+    order,
+    limit,
+    p,
+    query,
+    topic
+  );
   let queries = [fetchArticlesQuery];
 
   if (topic) {
