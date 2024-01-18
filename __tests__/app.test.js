@@ -169,6 +169,43 @@ describe("GET: /api/articles", () => {
         expect(body.msg).toBe("Bad Request");
       });
   });
+  it("GET: 200 should respond with an array of articles sorted by a valid column when a sort_by query is provided", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("title", {
+          descending: true,
+        });
+      });
+  });
+  it("GET: 400 should respond with an appropriate error message when passed an invalid sort_by query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=0")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  it("GET: 200 should respond with an array of articles sorted by a valid column when an order query is provided", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author&order=ASC")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toBeSortedBy("author", {
+          ascending: true,
+        });
+      });
+  });
+  it("GET: 400 should respond with an appropriate error message when passed an invalid sort query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author&order=0")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
 });
 
 describe("GET: /api/articles/:article_id/comments", () => {

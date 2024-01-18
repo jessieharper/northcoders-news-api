@@ -21,10 +21,26 @@ exports.fetchArticleById = (article_id) => {
     });
 };
 
-exports.fetchArticles = (query, topic) => {
-  const validQueries = ["topic"];
+exports.fetchArticles = (
+  sort_by = "created_at",
+  order = "DESC",
+  query,
+  topic
+) => {
+  const validQueries = [
+    "topic",
+    "title",
+    "author",
+    "created_at",
+    "DESC",
+    "ASC",
+  ];
 
-  if (query && !validQueries.includes(query)) {
+  if (
+    (query && !validQueries.includes(query)) ||
+    !validQueries.includes(sort_by) ||
+    !validQueries.includes(order)
+  ) {
     return Promise.reject({ msg: "Bad Request", status: 400 });
   }
 
@@ -35,7 +51,7 @@ exports.fetchArticles = (query, topic) => {
     queryParameters.push(topic);
   }
   queryStr += ` GROUP BY articles.article_id
-  ORDER BY articles.created_at DESC`;
+  ORDER BY articles.${sort_by} ${order}`;
 
   return db.query(queryStr, queryParameters).then(({ rows }) => {
     return rows;
