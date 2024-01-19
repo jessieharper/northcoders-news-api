@@ -10,7 +10,7 @@
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of articles filtered by a query. If the query is omitted, serves an array of all articles, which can be sorted by certain queries in ascending and descending order",
+    "description": "serves an array of articles filtered by a query. If the query is omitted, serves an array of all articles, which can be sorted by certain queries in ascending and descending order. If a limit query is provided, serves an array of x-amount of articles, where x is equal to the limit. If a p (page) query is provided, serves an array starting from the page number provided. If neither limit nor p queries are provided, limit defaults to 20, and p to 0",
     "queries": [
       "author",
       "topic",
@@ -78,8 +78,8 @@
     }
   },
   "GET /api/articles/:article_id/comments": {
-    "description": "serves an array of comments for a given article",
-    "queries": [],
+    "description": "serves an array of comments for a given article. If a limit query is provided, serves an array of x-amount of articles, where x is equal to the limit. If a p (page) query is provided, serves an array starting from the page number provided. If neither limit nor p queries are provided, limit defaults to 15, and p to 0",
+    "queries": ["limit", "p"],
     "exampleResponse": {
       "comment": [
         {

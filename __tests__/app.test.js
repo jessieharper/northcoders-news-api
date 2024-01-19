@@ -230,26 +230,27 @@ describe("GET: /api/articles", () => {
         expect(body.msg).toBe("Bad Request");
       });
   });
-  xit("GET: 200 should respond with array on a specific page when passed a page query", () => {
+  it("GET: 200 should respond with array on a specific page when passed a page query", () => {
     return request(app)
-      .get("/api/articles?limit=5&p=10")
+      .get("/api/articles?sort_by=title&order=DESC&limit=5&p=2")
       .expect(200)
       .then(({ body }) => {
-        const article = body.articles[0];
-        expect(article.title).toBe(
-          "Seven inspirational thought leaders from Manchester UK"
-        );
+        expect(body.articles.length).toBe(3);
+        expect(body.articles[0].title).toBe("Another article about Mitch");
+        expect(body.articles[1].title).toBe("Am I a cat?");
+        expect(body.articles[2].title).toBe("A");
       });
   });
-  xit("GET: 200 should respond with an array of all of the articles when provided a valid p query that is greater than the amount of pages", () => {
+  it("GET: 200 should respond with an empty arry when passed a valid p query that is greater than the amount of pages", () => {
     return request(app)
       .get("/api/articles?limit=13&p=999")
       .expect(200)
       .then(({ body }) => {
-        expect(body.articles.length).toBe(13);
+        expect(body.articles.length).toBe(0);
+        expect(body.articles).toEqual([]);
       });
   });
-  xit("GET: 400 should respond with an appropriate error message when passed an invalid p query", () => {
+  it("GET: 400 should respond with an appropriate error message when passed an invalid p query", () => {
     return request(app)
       .get("/api/articles?limit=5&p=mitch")
       .expect(400)
@@ -305,6 +306,57 @@ describe("GET: /api/articles/:article_id/comments", () => {
   it("GET: 400 should respond with an appropriate error message when provided an invalid article_id", () => {
     return request(app)
       .get("/api/articles/invalid_id/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  it("GET: 200 should respond with array that contains a specified amount of comments when the user provides a limit query", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=2")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments.length).toBe(2);
+      });
+  });
+  it("GET: 200 should respond with an array of all of the comments when provided a valid limit query that is greater than the total comments", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=999")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments.length).toBe(11);
+      });
+  });
+  it("GET: 400 should respond with an appropriate error message when passed an invalid limit query", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=mitch")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  it("GET: 200 should respond with array on a specific page when passed a page query", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=2&p=2")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments.length).toBe(2);
+        expect(body.comments[0].body).toBe("Lobster pot");
+        expect(body.comments[1].body).toBe("Delicious crackerbreads");
+      });
+  });
+  it("GET: 200 should respond with an empty array when passed a valid p query that is greater than the amount of pages", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=13&p=999")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments.length).toBe(0);
+        expect(body.comments).toEqual([]);
+      });
+  });
+  it("GET: 400 should respond with an appropriate error message when passed an invalid p query", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=5&p=mitch")
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad Request");

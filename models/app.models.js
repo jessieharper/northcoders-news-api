@@ -24,8 +24,8 @@ exports.fetchArticleById = (article_id) => {
 exports.fetchArticles = (
   sort_by = "created_at",
   order = "DESC",
-  limit,
-  p,
+  limit = 20,
+  p = 0,
   query,
   topic
 ) => {
@@ -57,30 +57,21 @@ exports.fetchArticles = (
   }
 
   queryStr += ` GROUP BY articles.article_id
-  ORDER BY articles.${sort_by} ${order}`;
-
-  if (!topic && limit) {
-    queryStr += ` LIMIT $1`;
-    queryParameters.push(limit);
-  } else if (topic && limit) {
-    queryStr += ` LIMIT $2`;
-    queryParameters.push(limit);
-  }
-  if (p) {
-    queryStr += ` OFFSET $2`;
-    queryParameters.push(p);
-  }
+  ORDER BY articles.${sort_by} ${order} LIMIT ${limit} OFFSET ${p * limit}`;
 
   return db.query(queryStr, queryParameters).then(({ rows }) => {
     return rows;
   });
 };
 
-exports.fetchCommentsById = (article_id) => {
+exports.fetchCommentsById = (article_id, limit = 15, p = 0) => {
+  if ((limit && !/^[0-9]+$/.test(limit)) || (p && !/^[0-9]+$/.test(p))) {
+    return Promise.reject({ msg: "Bad Request", status: 400 });
+  }
   return db
     .query(
-      `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC`,
-      [article_id]
+      `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3`,
+      [article_id, limit, p * limit]
     )
     .then(({ rows }) => {
       return rows;

@@ -80,9 +80,10 @@ exports.getArticles = (req, res, next) => {
 
 exports.getCommentsById = (req, res, next) => {
   const { article_id } = req.params;
+  const { limit, p } = req.query;
 
   const articleExistenceQuery = fetchArticleById(article_id);
-  const fetchQuery = fetchCommentsById(article_id);
+  const fetchQuery = fetchCommentsById(article_id, limit, p);
 
   Promise.all([articleExistenceQuery, fetchQuery])
     .then((response) => {
@@ -218,7 +219,6 @@ exports.deleteArticles = (req, res, next) => {
       res.status(204).send();
     })
     .catch((err) => {
-      console.log(err);
       next(err);
     });
 };
