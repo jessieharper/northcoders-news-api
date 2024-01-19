@@ -187,3 +187,18 @@ exports.addTopics = (newTopic) => {
       return rows[0];
     });
 };
+
+exports.removeArticles = (article_id) => {
+  return db
+    .query(`DELETE FROM comments WHERE article_id = $1`, [article_id])
+    .then(() => {
+      return db.query(`DELETE FROM articles WHERE article_id = $1`, [
+        article_id,
+      ]);
+    })
+    .then(({ rowCount }) => {
+      if (rowCount === 0) {
+        return Promise.reject({ msg: "Article Not Found", status: 404 });
+      }
+    });
+};

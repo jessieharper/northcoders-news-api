@@ -11,6 +11,7 @@ const {
   updateCommentVotes,
   addArticles,
   addTopics,
+  removeArticles,
 } = require("../models/app.models");
 
 const endpoints = require("../endpoints.json");
@@ -205,6 +206,19 @@ exports.postTopics = (req, res, next) => {
       res.status(201).send({ topic });
     })
     .catch((err) => {
+      next(err);
+    });
+};
+
+exports.deleteArticles = (req, res, next) => {
+  const { article_id } = req.params;
+
+  removeArticles(article_id)
+    .then(() => {
+      res.status(204).send();
+    })
+    .catch((err) => {
+      console.log(err);
       next(err);
     });
 };
