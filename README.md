@@ -14,4 +14,12 @@ Welcome to my Northcoders News API project! The aim of this project was to build
 
 You will need to have [Node.js(https://nodejs.org/en/download/current)] (v20.6.1 or higher) and [Postgres(https://www.postgresql.org/download/)] (v16 or higher) to run the project. You may also need to install a JSON formatter [extension(https://chromewebstore.google.com/detail/json-formatter/bcjindcccaagfpapjjmafapmmgkkhgoa?hl=en)] for your browser to make the data easier to read.
 
-In order to run this project locally, you will need to create .env.test and .env.development files in the main folder, and create a PGDATABASE=database_name_here environment variable in each. In db/setup.sql, copy over your database variable names.
+In order to run this project locally, you will need to:
+
+- Create a .env.development file at the root file directory and set the PGDATABASE to equal nc_news
+- If you want to run the test file, you will need to add a .env.test file and set the PGDATABASE to equal nc_news_test
+- Run npm install to install required dependencies.
+- Run npm setup-dbs to initialize the databases.
+- Run npm run seed to seed the production database.
+- Run npm run start to start the API listening on port 9090.
+- You can now view a list of endpoints by making a GET request to http://localhost:9090/api.
