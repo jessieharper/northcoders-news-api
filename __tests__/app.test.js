@@ -158,7 +158,7 @@ describe("GET: /api/articles", () => {
       .get("/api/articles?topic=northcoders")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Not Found");
+        expect(body.msg).toBe("Topic Not Found");
       });
   });
   it("GET: 400 should respond with an appropriate error message when passed an invalid query", () => {
@@ -668,7 +668,7 @@ describe("PATCH: /api/comments/:comment_id", () => {
       .send(updatedVotes)
       .expect(404)
       .then((response) => {
-        expect(response.body.msg).toBe("Not Found");
+        expect(response.body.msg).toBe("Comment Not Found");
       });
   });
 });
@@ -726,7 +726,7 @@ describe("POST: /api/articles", () => {
       .send(newArticle)
       .expect(404)
       .then((response) => {
-        expect(response.body.msg).toBe("Not Found");
+        expect(response.body.msg).toBe("Topic Not Found");
       });
   });
   it("POST: 404 should respond with an appropriate status and error message when provided with a non-existent username", () => {
