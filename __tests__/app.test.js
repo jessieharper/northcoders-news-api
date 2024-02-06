@@ -453,7 +453,7 @@ describe("PATCH: /api/articles/:article_id", () => {
         expect(comment.author).toBe("butter_bridge");
         expect(comment.article_id).toBe(1);
         expect(typeof comment.created_at).toBe("string");
-        expect(comment.votes).toBe(1);
+        expect(comment.votes).toBe(101);
         expect(comment.article_img_url).toBe(
           "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
         );
@@ -475,7 +475,7 @@ describe("PATCH: /api/articles/:article_id", () => {
         expect(comment.author).toBe("butter_bridge");
         expect(comment.article_id).toBe(1);
         expect(typeof comment.created_at).toBe("string");
-        expect(comment.votes).toBe(-1);
+        expect(comment.votes).toBe(99);
         expect(comment.article_img_url).toBe(
           "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
         );
