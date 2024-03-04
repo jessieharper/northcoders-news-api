@@ -26,5 +26,5 @@ In order to run this project locally, you will need to:
 
 
 Contact me:
-jessieharper12@gmail.com
-https://www.linkedin.com/in/jessie-harper/
+- jessieharper12@gmail.com
+- https://www.linkedin.com/in/jessie-harper/
