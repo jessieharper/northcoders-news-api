@@ -1,5 +1,7 @@
 # 🗞️ Northcoders News API 📰
 
+Tech stack: SQL, Postgres, Express, Node.js, Supertest 
+
 Welcome to my Northcoders News API project! The aim of this project was to build an API that mimicked a real-world backend news service such as Reddit. You can access the hosted version of the API [here](https://nc-news-7wgo.onrender.com/api). You can use this API to:
 
 - Get users
@@ -21,3 +23,8 @@ In order to run this project locally, you will need to:
 - Run npm run seed to seed the production database.
 - Run npm run start to start the API listening on port 9090.
 - You can now view a list of endpoints by making a GET request to http://localhost:9090/api.
+
+
+Contact me:
+jessieharper12@gmail.com
+https://www.linkedin.com/in/jessie-harper/
