@@ -1,4 +1,3 @@
-const fs = require("fs/promises");
 const db = require("../db/connection");
 
 exports.fetchTopics = () => {
@@ -191,5 +190,16 @@ exports.removeArticles = (article_id) => {
       if (rowCount === 0) {
         return Promise.reject({ msg: "Article Not Found", status: 404 });
       }
+    });
+};
+
+exports.lookUpContent = (search_term) => {
+  return db
+    .query(
+      `SELECT article_id, title, topic, author, ts_rank(to_tsvector(title || ' ' || topic || ' ' || author), plainto_tsquery('english', $1)) + ts_rank(to_tsvector(title || ' ' || topic || ' ' || author), plainto_tsquery('simple', 'coding app')) AS rank FROM articles WHERE to_tsvector('english', article_id || ' ' || title || ' ' || topic || ' ' || author) @@ plainto_tsquery($1) ORDER BY rank DESC LIMIT 10`,
+      [search_term]
+    )
+    .then(({ rows }) => {
+      return rows;
     });
 };

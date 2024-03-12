@@ -12,6 +12,7 @@ const {
   addArticles,
   addTopics,
   removeArticles,
+  lookUpContent,
 } = require("../models/app.models");
 
 const endpoints = require("../endpoints.json");
@@ -217,6 +218,18 @@ exports.deleteArticles = (req, res, next) => {
   removeArticles(article_id)
     .then(() => {
       res.status(204).send();
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.searchContent = (req, res, next) => {
+  const { q } = req.query;
+  lookUpContent(q)
+    .then((result) => {
+      const search_results = result;
+      res.status(200).send({ search_results });
     })
     .catch((err) => {
       next(err);
