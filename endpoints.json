@@ -93,6 +93,21 @@
       ]
     }
   },
+  "GET /api/search": {
+    "description": "serves an array of objects based on search query(ies) provided",
+    "queries": ["q"],
+    "exampleResponse": {
+      "search_results": [
+        {
+          "article_id": 1,
+          "topic": "mitch",
+          "title": "Article About Mitch",
+          "author": "butter_bridge",
+          "rank": 0.06079271
+        }
+      ]
+    }
+  },
   "POST /api/articles": {
     "description": "posts a new article. Author and topic must already exist int he database",
     "queries": [],
