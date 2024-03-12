@@ -4,6 +4,7 @@ const db = require("../db/connection");
 const endpoints = require("../endpoints.json");
 const app = require("../app");
 const request = require("supertest");
+const articles = require("../db/data/test-data/articles");
 
 beforeEach(() => seed(data));
 afterAll(() => db.end());
@@ -794,6 +795,34 @@ describe("DELETE: /api/articles/:article_id", () => {
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("Bad Request");
+      });
+  });
+});
+
+describe("GET: /api/search", () => {
+  it("GET: 200 should respond with an array of relevant search results", () => {
+    return request(app)
+      .get("/api/search?q=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.search_results).toBeSortedBy("rank", {
+          descending: true,
+        });
+        body.search_results.forEach((result) => {
+          expect(result).toHaveProperty("article_id");
+          expect(result).toHaveProperty("title");
+          expect(result).toHaveProperty("topic", "mitch");
+          expect(result).toHaveProperty("author");
+          expect(result).toHaveProperty("rank");
+        });
+      });
+  });
+  it("GET: 200 should respond with an empty array if no search results are found", () => {
+    return request(app)
+      .get("/api/search?q=not+found")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.search_results).toHaveLength(0);
       });
   });
 });
