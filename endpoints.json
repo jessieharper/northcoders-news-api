@@ -93,8 +93,8 @@
       ]
     }
   },
-  "GET /api/search": {
-    "description": "serves an array of objects based on search query(ies) provided",
+  "GET /api/articles/search": {
+    "description": "serves an array of article objects based on search query(ies) provided",
     "queries": ["q"],
     "exampleResponse": {
       "search_results": [
@@ -102,7 +102,32 @@
           "article_id": 1,
           "topic": "mitch",
           "title": "Article About Mitch",
-          "author": "butter_bridge",
+          "rank": 0.06079271
+        }
+      ]
+    }
+  },
+  "GET /api/topics/search": {
+    "description": "serves an array of topic objects based on search query(ies) provided",
+    "queries": ["q"],
+    "exampleResponse": {
+      "search_results": [
+        {
+          "slug": "mitch",
+          "rank": 0.06079271
+        }
+      ]
+    }
+  },
+  "GET /api/users/search": {
+    "description": "serves an array of user objects based on search query(ies) provided",
+    "queries": ["q"],
+    "exampleResponse": {
+      "search_results": [
+        {
+          "username": "mitch",
+          "name": "Mitch",
+          "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
           "rank": 0.06079271
         }
       ]
