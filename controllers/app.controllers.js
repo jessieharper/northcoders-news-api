@@ -12,7 +12,9 @@ const {
   addArticles,
   addTopics,
   removeArticles,
-  lookUpContent,
+  lookUpArticles,
+  lookUpTopics,
+  lookUpUsers,
 } = require("../models/app.models");
 
 const endpoints = require("../endpoints.json");
@@ -224,9 +226,36 @@ exports.deleteArticles = (req, res, next) => {
     });
 };
 
-exports.searchContent = (req, res, next) => {
+exports.searchArticles = (req, res, next) => {
   const { q } = req.query;
-  lookUpContent(q)
+
+  lookUpArticles(q)
+    .then((result) => {
+      const search_results = result;
+      res.status(200).send({ search_results });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.searchTopics = (req, res, next) => {
+  const { q } = req.query;
+
+  lookUpTopics(q)
+    .then((result) => {
+      const search_results = result;
+      res.status(200).send({ search_results });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.searchUsers = (req, res, next) => {
+  const { q } = req.query;
+
+  lookUpUsers(q)
     .then((result) => {
       const search_results = result;
       res.status(200).send({ search_results });
