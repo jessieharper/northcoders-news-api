@@ -799,10 +799,10 @@ describe("DELETE: /api/articles/:article_id", () => {
   });
 });
 
-describe("GET: /api/search", () => {
+describe("GET: /api/articles/search", () => {
   it("GET: 200 should respond with an array of relevant search results", () => {
     return request(app)
-      .get("/api/search?q=mitch")
+      .get("/api/articles/search?q=mitch")
       .expect(200)
       .then(({ body }) => {
         expect(body.search_results).toBeSortedBy("rank", {
@@ -819,7 +819,54 @@ describe("GET: /api/search", () => {
   });
   it("GET: 200 should respond with an empty array if no search results are found", () => {
     return request(app)
-      .get("/api/search?q=not+found")
+      .get("/api/articles/search?q=not+found")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.search_results).toHaveLength(0);
+      });
+  });
+});
+
+describe("GET: /api/topics/search", () => {
+  it("GET: 200 should respond with an array of relevant search results", () => {
+    return request(app)
+      .get("/api/topics/search?q=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.search_results[0]).toHaveProperty("slug", "mitch");
+        expect(body.search_results[0]).toHaveProperty("rank");
+      });
+  });
+  it("GET: 200 should respond with an empty array if no search results are found", () => {
+    return request(app)
+      .get("/api/topics/search?q=not+found")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.search_results).toHaveLength(0);
+      });
+  });
+});
+
+describe("GET: /api/users/search", () => {
+  it("GET: 200 should respond with an array of relevant search results", () => {
+    return request(app)
+      .get("/api/users/search?q=butter_bridge")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.search_results[0]).toHaveProperty(
+          "username",
+          "butter_bridge"
+        );
+        expect(body.search_results[0]).toHaveProperty("name", "jonny");
+        expect(body.search_results[0]).toHaveProperty(
+          "avatar_url",
+          "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+        );
+      });
+  });
+  it("GET: 200 should respond with an empty array if no search results are found", () => {
+    return request(app)
+      .get("/api/topics/search?q=not+found")
       .expect(200)
       .then(({ body }) => {
         expect(body.search_results).toHaveLength(0);

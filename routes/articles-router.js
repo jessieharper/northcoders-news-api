@@ -7,9 +7,12 @@ const {
   patchArticleVotes,
   postArticles,
   deleteArticles,
+  searchArticles,
 } = require("../controllers/app.controllers");
 
 articlesRouter.route("/").get(getArticles).post(postArticles);
+
+articlesRouter.route("/search").get(searchArticles);
 
 articlesRouter
   .route("/:article_id")
